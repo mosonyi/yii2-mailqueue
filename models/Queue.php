@@ -18,38 +18,35 @@ use nterms\mailqueue\Message;
  * @property string $time_to_send
  * @property string $swift_message
  */
-class Queue extends ActiveRecord
-{
+class Queue extends ActiveRecord {
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return Yii::$app->get(MailQueue::NAME)->table;
     }
 
     /**
      * @inheritdoc
      */
-	public function behaviors()
-	{
-		return [
-			'timestamp' => [
-				'class' => 'yii\behaviors\TimestampBehavior',
-				'attributes' => [
-					ActiveRecord::EVENT_BEFORE_INSERT => ['created_at'],
-					ActiveRecord::EVENT_BEFORE_UPDATE => ['last_attempt_time'],
-				],
-				'value' => new \yii\db\Expression('NOW()'),
-			],
-		];
-	}
+    public function behaviors() {
+        return [
+            'timestamp' => [
+                'class' => 'yii\behaviors\TimestampBehavior',
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['created_at'],
+                    ActiveRecord::EVENT_BEFORE_UPDATE => ['last_attempt_time'],
+                ],
+                'value' => new \yii\db\Expression('NOW()'),
+            ],
+        ];
+    }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['created_at', 'attempts', 'last_attempt_time', 'sent_time'], 'integer'],
             [['time_to_send', 'swift_message'], 'required'],
@@ -57,8 +54,14 @@ class Queue extends ActiveRecord
         ];
     }
 
-	public function toMessage()
-	{
-		return unserialize(base64_decode($this->swift_message));
-	}
+    public function toMessage() {
+        $ret = null;
+        try {
+            $ret = unserialize(base64_decode($this->swift_message));
+            return $ret;
+        } catch (\Exception $ex) {
+            throw new \Exception($ex->getMessage());
+        }
+    }
+
 }
