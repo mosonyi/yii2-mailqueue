@@ -210,7 +210,7 @@ class MailQueue extends Mailer {
      * @return int Number of rows deleted
      */
     public function purge() {
-        return Queue::deleteAll(['or', ['sent_time' => 'IS NOT NULL'], ['>=', 'attempts', $this->maxAttempts]]);
+        return Queue::deleteAll(['or', ['not', ['sent_time' => NULL]], ['>=', 'attempts', $this->maxAttempts]]);
     }
 
 }
