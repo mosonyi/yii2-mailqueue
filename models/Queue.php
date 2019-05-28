@@ -2,6 +2,9 @@
 
 namespace nterms\mailqueue\models;
 
+error_reporting(E_ALL & ~E_NOTICE);
+ini_set("unserialize_callback_func", "self::callback_no_spl");
+
 use Yii;
 use yii\db\ActiveRecord;
 use nterms\mailqueue\MailQueue;
@@ -19,6 +22,10 @@ use nterms\mailqueue\Message;
  * @property string $swift_message
  */
 class Queue extends ActiveRecord {
+
+    public static function callback_no_spl($classname) {
+        throw new \Exception("The class $classname needs to be available.");
+    }
 
     /**
      * @inheritdoc
