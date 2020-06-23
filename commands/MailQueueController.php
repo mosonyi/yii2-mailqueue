@@ -20,18 +20,27 @@ use yii\console\widgets\Table;
 class MailQueueController extends Controller {
 
     public $defaultAction = 'process';
+    public $debug = false;
+
+    public function options($actionID) {
+        return array_merge(parent::options($actionID), [
+            'debug'
+        ]);
+    }
 
     /**
      * This command processes the mail queue     
      */
     public function actionProcess() {
         $stat = \Yii::$app->mailqueue->process();
-        echo Table::widget([
-            'headers' => ['Messages being sent from queue', 'Not sent', 'Failed to read (unserialize)', 'Other error'],
-            'rows' => [
-                [$stat['items_count'], $stat['notSent'], $stat['unserializeFailure'], $stat['otherFailure']],
-            ],
-        ]);
+        if ($this->debug) {
+            echo Table::widget([
+                'headers' => ['Messages being sent from queue', 'Not sent', 'Failed to read (unserialize)', 'Other error'],
+                'rows' => [
+                    [$stat['items_count'], $stat['notSent'], $stat['unserializeFailure'], $stat['otherFailure']],
+                ],
+            ]);
+        }
 
         if (!empty($stat['error_messages'])) {
             echo Table::widget([
