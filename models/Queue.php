@@ -23,8 +23,25 @@ use nterms\mailqueue\Message;
  */
 class Queue extends ActiveRecord {
 
+    private static $db;
+
     public static function callback_no_spl($classname) {
         throw new \Exception("The class $classname needs to be available.");
+    }
+
+    /**
+     * Method to set db instance to use.
+     */
+    public function setDb(\yii\db\Connection $db) {
+        self::$db = $db;
+    }
+
+    /**
+     * This method is overriden, because we have to be able to use a different database connection too.
+     * It has to be static to overwrite the inherited method.
+     */
+    public static function getDb() {
+        return self::$db ? self::$db : Yii::$app->db;
     }
 
     /**
@@ -70,5 +87,4 @@ class Queue extends ActiveRecord {
             throw new \Exception($ex->getMessage());
         }
     }
-
 }
