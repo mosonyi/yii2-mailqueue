@@ -24,6 +24,7 @@ class Message extends \yii\swiftmailer\Message {
      */
     public function setDb(\yii\db\Connection $db) {
         $this->db = $db;
+        return $this;
     }
 
     /**
