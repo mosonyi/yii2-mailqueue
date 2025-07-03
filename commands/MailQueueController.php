@@ -71,4 +71,24 @@ class MailQueueController extends Controller {
         }
     }
 
+    public function actionSendtest($email) {
+        try {
+            if ($this->debug) {
+                print_r(\Yii::$app->components['mailqueue']);
+            }
+            \Yii::$app->mailqueue->compose()
+                ->setTo($email)
+                ->setFrom($email)
+                ->setSubject("Test")
+                ->setTextBody("This is a test email")
+                ->send();
+                echo "Mail sent successfully.";
+        } catch (Exception $e) {
+            echo $e->getMessage();
+        } catch (Throwable $t) {
+            echo $e->getMessage();
+        }
+        
+    }
+
 }
